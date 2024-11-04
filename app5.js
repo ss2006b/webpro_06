@@ -26,30 +26,47 @@ app.get("/luck", (req, res) => {
   console.log( 'あなたの運勢は' + luck + 'です' );
   res.render( 'luck', {number:num, luck:luck} );
 });
-
 app.get("/janken", (req, res) => {
-  let hand = req.query.hand;
-  let win = Number( req.query.win );
-  let total = Number( req.query.total );
-  console.log( {hand, win, total});
-  const num = Math.floor( Math.random() * 3 + 1 );
+  let hand = req.query.hand;  // プレイヤーの手
+  let win = Number(req.query.win)|| 0;  // 勝利回数
+  let total = Number(req.query.total)|| 0;  // 総試合数
+  console.log({ hand, win, total });
+
+  // CPUの手をランダムに決定
+  const num = Math.floor(Math.random() * 3 + 1);
   let cpu = '';
-  if( num==1 ) cpu = 'グー';
-  else if( num==2 ) cpu = 'チョキ';
+  if (num === 1) cpu = 'グー';
+  else if (num === 2) cpu = 'チョキ';
   else cpu = 'パー';
-  // ここに勝敗の判定を入れる
-  // 今はダミーで人間の勝ちにしておく
-  let judgement = '勝ち';
-  win += 1;
-  total += 1;
+
+  // 勝敗判定
+  let judgement = '';
+  if (
+    (hand === 'グー' && cpu === 'チョキ') ||
+    (hand === 'チョキ' && cpu === 'パー') ||
+    (hand === 'パー' && cpu === 'グー')
+  ) {
+    judgement = '勝ち';
+    win += 1;
+  } else if (hand === cpu) {
+    judgement = '引き分け';
+  } else {
+    judgement = '負け';
+  }
+  
+  total += 1;  // 総試合数を増やす
+
+  // レスポンスデータを作成
   const display = {
     your: hand,
     cpu: cpu,
     judgement: judgement,
     win: win,
     total: total
-  }
-  res.render( 'janken', display );
+  };
+  
+  // レンダリング
+  res.render('janken', display);
 });
 
 app.listen(8080, () => console.log("Example app listening on port 8080!"));
