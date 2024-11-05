@@ -5,6 +5,7 @@
 -|-
 app5.js| プログラム本体
 public/janken.html|ジャンケンの開始画面
+views/janken.ejs|ジャンケンのテンプレートファイル
 ```javascript
 console.log('hello');
 ```
