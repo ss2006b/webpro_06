@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>1~5の中で好きな数字を選んでください</title>
+</head>
+<body>
+    <p>あなたが選択した数字は<%= yu %>です．</p>
+    <p>正解は<%= cp %>です．</p>
+    <p>判定：<%= da %></p>
+    <p>現在<%= total %>回中<%= maru %>回正解しています．</p>
+    <hr>
+    <form action="/number">
+        <input type="text" name="you" required>
+        <label for="you">次はどの数字にする？</label>
+        <input type="hidden" name="maru" value="<%= maru %>">
+        <input type="hidden" name="total" value="<%= total %>">
+        <input type="submit" values="どの数字にする？">
+    </form>   
+</body>
+</html>

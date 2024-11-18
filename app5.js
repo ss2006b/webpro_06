@@ -69,4 +69,75 @@ app.get("/janken", (req, res) => {
   res.render('janken', display);
 });
 
+app.get("/choose", (req, res) => {
+  let you  = req.query.you;
+  let maru = Number(req.query.maru);  // 正解回数
+  let tota = Number(req.query.tota);  // 総試合数  
+  console.log({ you,maru,tota });
+
+
+  const num = Math.floor(Math.random() * 2 + 1);
+  let correct = '';
+  if (num === 1) correct = '右';
+  else  correct = '左';
+  
+  let judgement = '';
+  if (you === correct) {
+    judgement = '正解';
+    maru += 1;
+  } else  {
+    judgement = '不正解';
+  }
+  tota += 1;
+
+  const display = {
+    yu: you,
+    cp: correct,
+    da: judgement,
+    maru: maru,
+    tota: tota
+  };
+  
+  // レンダリング
+  res.render('choose', display);
+});
+
+app.get("/number", (req, res) => {
+  let you  = req.query.you;
+  let maru = Number(req.query.maru);  // 正解回数
+  let total = Number(req.query.total);  // 総試合数  
+  console.log({ you,maru,total });
+
+  
+  const num = Math.floor(Math.random() * 5 + 1);
+  let correct = '';
+  if (num == 1) correct = '1';
+  else if (num == 2) correct = '2';
+  else if (num == 3) correct = '3';
+  else if (num == 4) correct = '4';
+  else correct = '5';
+  
+  let judgement = '';
+  if (you === correct) {
+    judgement = '正解';
+    maru += 1;
+  } else  {
+    judgement = '不正解';
+  }
+  total += 1;
+
+  const display = {
+    yu: you,
+    cp: correct,
+    da: judgement,
+    maru: maru,
+    total: total
+  };
+  
+  // レンダリング
+  res.render('number', display);
+});
+
+app.get("/")
+
 app.listen(8080, () => console.log("Example app listening on port 8080!"));

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>どちらのドアに入るか？</title>
+</head>
+<body>
+    <p>あなたが選択したドアは<%= yu %>です．</p>
+    <p>正解は<%= cp %>のドアです．</p>
+    <p>判定：<%= da %></p>
+    <p>現在<%= tota %>回中<%= maru %>回正解しています．</p>
+    <hr>
+    <form action="/choose">
+        <input type="text" name="you" required>
+        <label for="you">次はどっちのドアに入る？</label>
+        <input type="hidden" name="maru" value="<%= maru %>">
+        <input type="hidden" name="tota" value="<%= tota %>">
+        <input type="submit" values="どっちにする？">
+    </form>   
+</body>
+</html>
