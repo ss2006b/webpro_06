@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>プログラミング言語を追加</title>
+</head>
+<body>
+    <h1>プログラミング言語を追加</h1>
+    <form action="/language_add" method="get">
+        <p>
+            <label for="id">ID</label>
+            <input type="number" name="id" id="id" min="1" required>
+        </p>
+        <p>
+            <label for="name">言語名</label>
+            <input type="text" name="name" id="name" required>
+        </p>
+        <p>
+            <label for="year">登場年</label>
+            <input type="number" name="year" id="year" min="1900" required>
+        </p>
+        <p>
+            <label for="creator">開発者</label>
+            <input type="text" name="creator" id="creator" required>
+        </p>
+        <input type="submit" value="登録">
+    </form>
+    <p><a href="/languages">一覧を見る</a></p>
+</body>
+</html>

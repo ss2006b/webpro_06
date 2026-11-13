@@ -141,6 +141,54 @@ app.get("/choose", (req, res) => {
   res.render('choose', display);
 });
 
+let station = [
+  { id:1, code:"JE01", name:"東京駅"},
+  { id:2, code:"JE07", name:"舞浜駅"},
+  { id:3, code:"JE12", name:"新習志野駅"},
+  { id:4, code:"JE13", name:"幕張豊砂駅"},
+  { id:5, code:"JE14", name:"海浜幕張駅"},
+  { id:6, code:"JE05", name:"新浦安駅"},
+];
+
+app.get("/keiyo", (req, res) => {
+  // 本来ならここにDBとのやり取りが入る
+  res.render('db1', { data: station });
+});
+
+app.get("/keiyo_table", (req, res) => {
+  res.render('db2', { data: station });
+});
+
+app.get("/keiyo_add", (req, res) => {
+  const id = Number(req.query.id);
+  const code = req.query.code;
+  const name = req.query.name;
+  const newdata = { id: id, code: code, name: name };
+  station.push(newdata);
+  res.render('db1', { data: station });
+});
+
+let languages = [
+  { id: 1, name: "JavaScript", year: 1995, creator: "Brendan Eich" },
+  { id: 2, name: "Python", year: 1991, creator: "Guido van Rossum" },
+  { id: 3, name: "Ruby", year: 1995, creator: "まつもとゆきひろ" },
+  { id: 4, name: "Java", year: 1995, creator: "James Gosling" },
+];
+
+app.get("/languages", (req, res) => {
+  res.render('languages', { data: languages });
+});
+
+app.get("/language_add", (req, res) => {
+  const id = Number(req.query.id);
+  const name = req.query.name;
+  const year = Number(req.query.year);
+  const creator = req.query.creator;
+  const newdata = { id: id, name: name, year: year, creator: creator };
+  languages.push(newdata);
+  res.render('languages', { data: languages });
+});
+
 app.get("/number", (req, res) => {
   let you  = req.query.you;
   let maru = Number(req.query.maru);  // 正解回数
