@@ -26,6 +26,7 @@ app.get("/luck", (req, res) => {
   console.log( 'あなたの運勢は' + luck + 'です' );
   res.render( 'luck', {number:num, luck:luck} );
 });
+
 app.get("/janken", (req, res) => {
   let hand = req.query.hand;  // プレイヤーの手
   let win = Number(req.query.win)|| 0;  // 勝利回数
@@ -67,6 +68,44 @@ app.get("/janken", (req, res) => {
   
   // レンダリング
   res.render('janken', display);
+});
+
+app.get("/janken2", (req, res) => {
+  const hand = req.query.hand;
+  let win = Number(req.query.win) || 0;
+  let total = Number(req.query.total) || 0;
+
+  let cpu = "";
+  let judgement = "";
+
+  // ラジオボタンで手が送信された場合だけ対戦する
+  if (["グー", "チョキ", "パー"].includes(hand)) {
+    const hands = ["グー", "チョキ", "パー"];
+    cpu = hands[Math.floor(Math.random() * hands.length)];
+
+    if (
+      (hand === "グー" && cpu === "チョキ") ||
+      (hand === "チョキ" && cpu === "パー") ||
+      (hand === "パー" && cpu === "グー")
+    ) {
+      judgement = "勝ち";
+      win++;
+    } else if (hand === cpu) {
+      judgement = "引き分け";
+    } else {
+      judgement = "負け";
+    }
+
+    total++;
+  }
+
+  res.render("janken2", {
+    your: hand || "",
+    cpu,
+    judgement,
+    win,
+    total
+  });
 });
 
 app.get("/choose", (req, res) => {
