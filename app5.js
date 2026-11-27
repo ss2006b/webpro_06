@@ -166,11 +166,41 @@ app.get("/keiyo2", (req, res) => {
 });
 
 app.get("/keiyo2/:number", (req, res) => {
-  // 本来ならここにDBとのやり取りが入る
   const number = req.params.number;
-  const detail = station2[ number ];
-  res.render('keiyo2_detail', {data: detail} );
+  const detail = /^\d+$/.test(number) ? station2[Number(number)] : undefined;
+  if (!detail) {
+    return res.status(404).send("指定された駅が見つかりません。");
+  }
+  res.render('keiyo2_detail', { data: detail });
 });
+
+app.post("/keiyo2_add", express.urlencoded({ extended: false }), (req, res) => {
+  const readField = (name) => {
+    const value = req.body[name];
+    return typeof value === "string" ? value.trim() : "";
+  };
+
+  const id = Number(readField("id"));
+  const code = readField("code");
+  const name = readField("name");
+  const change = readField("change");
+  const passengers = Number(readField("passengers") || NaN);
+  const distance = Number(readField("distance") || NaN);
+
+  if (!Number.isSafeInteger(id) || id < 1 || !code || !name ||
+      !Number.isSafeInteger(passengers) || passengers < 0 ||
+      !Number.isFinite(distance) || distance < 0) {
+    return res.status(400).send("入力内容を確認してください。IDは1以上の整数、乗車人員と距離は0以上で入力してください。");
+  }
+
+  if (station2.some((station) => station.id === id)) {
+    return res.status(409).send("そのIDは登録済みです。別のIDを入力してください。");
+  }
+
+  station2.push({ id, code, name, change, passengers, distance });
+  res.redirect(303, "/keiyo2");
+});
+
 app.get("/keiyo", (req, res) => {
   // 本来ならここにDBとのやり取りが入る
   res.render('db1', { data: station });
