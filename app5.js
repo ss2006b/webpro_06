@@ -161,6 +161,9 @@ let station2 = [
   { id:7, code:"JE18", name:"蘇我駅", change:"内房線，外房線", passengers:31328, distance:43.0 },
 ];
 
+// 古い削除確認画面から別の駅を削除しないよう、駅IDは再利用しない
+const usedStation2Ids = new Set(station2.map((station) => station.id));
+
 // 一覧
 app.get("/keiyo2", (req, res) => {
   // 本来ならここにDBとのやり取りが入る
@@ -182,25 +185,49 @@ app.get("/keiyo2/:number", (req, res) => {
   res.render('keiyo2_detail', { id: number, data: detail });
 });
 
+// 削除確認
+app.get("/keiyo2/delete_confirm/:number", (req, res) => {
+  const number = Number(req.params.number);
+  const detail = /^\d+$/.test(req.params.number) ? station2[number] : undefined;
+  if (!detail) {
+    return res.status(404).send("指定された駅が見つかりません。");
+  }
+  res.set("Cache-Control", "no-store");
+  res.render('keiyo2_delete', { number, data: detail });
+});
+
 // Delete
 app.get("/keiyo2/delete/:number", (req, res) => {
-  // 本来は削除の確認ページを表示する
-  // 本来は削除する番号が存在するか厳重にチェックする
-  // 本来ならここにDBとのやり取りが入る
-  station2.splice( req.params.number, 1 );
-  res.redirect('/keiyo2' );
+  res.set("Cache-Control", "no-store");
+  const number = Number(req.params.number);
+  const detail = /^\d+$/.test(req.params.number) ? station2[number] : undefined;
+  if (!detail) {
+    return res.status(404).send("指定された駅が見つかりません。");
+  }
+
+  // 削除によって配列内の位置が変わるため、確認画面で表示した駅のIDも照合する
+  if (req.query.id !== String(detail.id)) {
+    return res.status(409).send("駅一覧を開き直して、削除する駅を確認してください。");
+  }
+
+  station2.splice(number, 1);
+  res.redirect('/keiyo2');
 });
 
 // Create
 app.post("/keiyo2", (req, res) => {
   // 本来ならここにDBとのやり取りが入る
-  const id = station2.length + 1;
+  let id = station2.length + 1;
+  while (usedStation2Ids.has(id)) {
+    id++;
+  }
   const code = req.body.code;
   const name = req.body.name;
   const change = req.body.change;
   const passengers = req.body.passengers;
   const distance = req.body.distance;
   station2.push( { id: id, code: code, name: name, change: change, passengers: passengers, distance: distance } );
+  usedStation2Ids.add(id);
   console.log( station2 );
   res.render('keiyo2', {data: station2} );
 });
@@ -252,11 +279,12 @@ app.post("/keiyo2_add", express.urlencoded({ extended: false }), (req, res) => {
     return res.status(400).send("入力内容を確認してください。IDは1以上の整数、乗車人員と距離は0以上で入力してください。");
   }
 
-  if (station2.some((station) => station.id === id)) {
-    return res.status(409).send("そのIDは登録済みです。別のIDを入力してください。");
+  if (usedStation2Ids.has(id)) {
+    return res.status(409).send("そのIDは使用済みです。別のIDを入力してください。");
   }
 
   station2.push({ id, code, name, change, passengers, distance });
+  usedStation2Ids.add(id);
   res.redirect(303, "/keiyo2");
 });
 
